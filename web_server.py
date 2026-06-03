@@ -136,24 +136,26 @@ def index(request: Request):
 @app.post('/review', response_class=HTMLResponse)
 def review(request: Request):
     redirect = require_auth(request)
-    if redirect: return redirect
+    if redirect:
+        return redirect
+
     seed_if_empty()
+
     interventions = InitiativeEngine().run_review()
 
     memory_items = []
+    for item in interventions:
+        memory_items.append({
+            "type": item.type.value,
+            "message": item.message,
+            "recommended_action": item.recommended_action,
+            "confidence": item.confidence.value,
+            "evidence": item.evidence
+        })
 
-for item in interventions:
-    memory_items.append({
-        "type": item.type.value,
-        "message": item.message,
-        "recommended_action": item.recommended_action,
-        "confidence": item.confidence.value,
-        "evidence": item.evidence
-    })
+    ai_review = generate_ai_review(memory_items)
 
-ai_review = generate_ai_review(memory_items)
-
-if not interventions:
+    if not interventions:
         content = "<p>No interventions. Suspiciously peaceful. Enjoy it while it lasts.</p>"
     else:
         cards = []
@@ -167,17 +169,18 @@ if not interventions:
             <h3>Evidence</h3><ul>{evidence}</ul></div>
             """)
         content = ''.join(cards)
-ai_html = f"""
-<div class='card'>
-<h2>AI Shadow Review</h2>
-<pre>{html.escape(str(ai_review))}</pre>
-</div>
-"""
 
-return page(
-    "Review results",
-    f"<a class='btn' href='/' >Back</a>{ai_html}{content}"
-)
+    ai_html = f"""
+    <div class='card'>
+    <h2>AI Shadow Review</h2>
+    <pre>{html.escape(str(ai_review))}</pre>
+    </div>
+    """
+
+    return page(
+        "Review results",
+        f"<a class='btn' href='/'>Back</a>{ai_html}{content}"
+    )
 
 
 @app.get('/memory', response_class=HTMLResponse)
