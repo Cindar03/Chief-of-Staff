@@ -153,7 +153,7 @@ for item in interventions:
 
 ai_review = generate_ai_review(memory_items)
 
-    if not interventions:
+if not interventions:
         content = "<p>No interventions. Suspiciously peaceful. Enjoy it while it lasts.</p>"
     else:
         cards = []
