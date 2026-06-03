@@ -167,7 +167,17 @@ ai_review = generate_ai_review(memory_items)
             <h3>Evidence</h3><ul>{evidence}</ul></div>
             """)
         content = ''.join(cards)
-    return page("Review results", f"<a class='btn' href='/'>Back</a>{content}")
+ai_html = f"""
+<div class='card'>
+<h2>AI Shadow Review</h2>
+<pre>{html.escape(str(ai_review))}</pre>
+</div>
+"""
+
+return page(
+    "Review results",
+    f"<a class='btn' href='/' >Back</a>{ai_html}{content}"
+)
 
 
 @app.get('/memory', response_class=HTMLResponse)
