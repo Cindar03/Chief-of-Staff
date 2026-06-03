@@ -139,6 +139,20 @@ def review(request: Request):
     if redirect: return redirect
     seed_if_empty()
     interventions = InitiativeEngine().run_review()
+
+    memory_items = []
+
+for item in interventions:
+    memory_items.append({
+        "type": item.type.value,
+        "message": item.message,
+        "recommended_action": item.recommended_action,
+        "confidence": item.confidence.value,
+        "evidence": item.evidence
+    })
+
+ai_review = generate_ai_review(memory_items)
+
     if not interventions:
         content = "<p>No interventions. Suspiciously peaceful. Enjoy it while it lasts.</p>"
     else:
