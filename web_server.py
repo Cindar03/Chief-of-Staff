@@ -9,6 +9,7 @@ from typing import Optional
 
 from fastapi import FastAPI, Form, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
+from app.openai_review import generate_ai_review
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
